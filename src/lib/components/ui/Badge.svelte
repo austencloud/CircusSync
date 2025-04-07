@@ -3,7 +3,7 @@
     export let color: 'blue' | 'green' | 'red' | 'amber' | 'purple' | 'gray' = 'blue';
     export let variant: 'solid' | 'outline' = 'solid';
     export let size: 'sm' | 'md' = 'sm';
-    export let class: string = '';
+    export let className: string = '';
     
     // Compute classes based on props
     $: variantClasses = {
@@ -34,7 +34,7 @@
       'inline-flex items-center font-medium rounded-full',
       variantClasses[variant][color],
       sizeClasses[size],
-      class,
+      className,
     ].join(' ');
   </script>
   

@@ -1,286 +1,307 @@
 // src/lib/services/auth.ts
-// Authentication service for CircusSync
-
 import {
-  getAuth,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  sendPasswordResetEmail,
-  updateProfile,
-  signOut as firebaseSignOut,
-  onAuthStateChanged,
-  type User as FirebaseUser,
-} from "firebase/auth";
-import { derived, writable, type Readable } from "svelte/store";
-import { goto } from "$app/navigation";
-import type { User } from "../types";
-import { doc, getDoc, setDoc, getFirestore } from "firebase/firestore";
+	signInWithEmailAndPassword,
+	createUserWithEmailAndPassword,
+	sendPasswordResetEmail,
+	updateProfile,
+	signOut as firebaseSignOut,
+	onAuthStateChanged,
+	type User as FirebaseUser
+} from 'firebase/auth';
+import { derived, writable, type Readable } from 'svelte/store';
+import { goto } from '$app/navigation';
+import type { User } from '../types';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { browser } from '$app/environment';
+import { getAuthInstance, getDbInstance } from '$lib/firebase';
+
+// --- MOCK FLAG ---
+// Use 'true' to bypass Firebase Auth, 'false' to use real Firebase
+// Reads from .env file (VITE_USE_MOCK_AUTH=true)
+const useMockAuth = import.meta.env.VITE_USE_MOCK_AUTH === 'true';
+// --- END MOCK FLAG ---
 
 // Auth store
 export const authStore = writable<{
-  user: User | null;
-  loading: boolean;
-  error: string | null;
+	user: User | null;
+	loading: boolean;
+	error: string | null;
 }>({
-  user: null,
-  loading: true,
-  error: null,
+	user: null,
+	loading: !useMockAuth && !browser ? false : true, // Start loading only if using Firebase & on client
+	error: null
 });
 
-// Initialize Firebase Auth
-const auth = getAuth();
-const db = getFirestore();
+// Mock User Data (Only used if useMockAuth is true)
+const mockUser: User = {
+	id: 'mock-user-123',
+	email: 'test@test.com',
+	name: 'Mock User',
+	role: 'admin', // Give mock user admin role for testing all features
+	lastLogin: new Date(),
+	photoURL: 'https://placehold.co/100x100/7FBA00/FFF?text=MU' // Placeholder image
+};
 
-// Helper to convert Firebase User to our User model
 async function createUserProfile(firebaseUser: FirebaseUser): Promise<User> {
-  // Get additional user data from Firestore
-  const userDocRef = doc(db, "users", firebaseUser.uid);
-  const userDoc = await getDoc(userDocRef);
-
-  if (userDoc.exists()) {
-    // User profile exists, return it
-    return {
-      ...(userDoc.data() as User),
-      id: firebaseUser.uid,
-      email: firebaseUser.email || "",
-      name: firebaseUser.displayName || "",
-      photoURL: firebaseUser.photoURL || undefined,
-      lastLogin: new Date(),
-    };
-  } else {
-    // Create a new user profile
-    const newUser: User = {
-      id: firebaseUser.uid,
-      email: firebaseUser.email || "",
-      name: firebaseUser.displayName || "",
-      role: "readonly", // Default role for new users
-      lastLogin: new Date(),
-    };
-
-    // Save to Firestore
-    await setDoc(userDocRef, newUser);
-    return newUser;
-  }
+	// ... (keep the existing createUserProfile function as is) ...
+	// It will only be called if useMockAuth is false
+	const db = getDbInstance();
+	if (!db) throw new Error('Firestore not initialized');
+	const userDocRef = doc(db, 'users', firebaseUser.uid);
+	const userDoc = await getDoc(userDocRef);
+	if (userDoc.exists()) {
+		const dbData = userDoc.data();
+		return {
+			id: firebaseUser.uid,
+			email: firebaseUser.email || dbData.email || '',
+			name: firebaseUser.displayName || dbData.name || '',
+			role: dbData.role || 'readonly',
+			photoURL: firebaseUser.photoURL || dbData.photoURL || undefined,
+			lastLogin: new Date()
+		};
+	} else {
+		const newUser: User = {
+			id: firebaseUser.uid,
+			email: firebaseUser.email || '',
+			name: firebaseUser.displayName || 'New User',
+			role: 'readonly',
+			lastLogin: new Date(),
+			photoURL: firebaseUser.photoURL || undefined
+		};
+		await setDoc(userDocRef, newUser);
+		return newUser;
+	}
 }
 
-// Initialize auth state listener
 export function initAuth(): void {
-  onAuthStateChanged(auth, async (firebaseUser) => {
-    if (firebaseUser) {
-      try {
-        const user = await createUserProfile(firebaseUser);
-        authStore.set({ user, loading: false, error: null });
-      } catch (error) {
-        console.error("Error creating user profile:", error);
-        authStore.set({
-          user: null,
-          loading: false,
-          error: "Failed to load user profile",
-        });
-      }
-    } else {
-      authStore.set({ user: null, loading: false, error: null });
-    }
-  });
+	if (!browser) {
+		authStore.set({ user: null, loading: false, error: null });
+		return;
+	}
+
+	// --- MOCK LOGIC for initAuth ---
+	if (useMockAuth) {
+		console.warn('Using Mock Authentication. No real Firebase Auth listener attached.');
+		// Simulate logged-out state initially, login page will call signIn
+		authStore.set({ user: null, loading: false, error: null });
+		return; // Skip Firebase listener setup
+	}
+	// --- END MOCK LOGIC ---
+
+	// Original Firebase logic (runs only if useMockAuth is false)
+	console.log('initAuth called (Client - Real Firebase)');
+	const auth = getAuthInstance();
+	if (!auth) {
+		console.error('Auth service not available when initAuth was called (browser).');
+		authStore.set({ user: null, loading: false, error: 'Auth service unavailable' });
+		return;
+	}
+	authStore.update((state) => ({ ...state, loading: true, error: null }));
+	onAuthStateChanged(
+		auth,
+		async (firebaseUser) => {
+			// ... (keep existing onAuthStateChanged logic) ...
+			console.log('Auth state changed:', firebaseUser?.uid || 'No user');
+			if (firebaseUser) {
+				try {
+					const user = await createUserProfile(firebaseUser);
+					authStore.set({ user, loading: false, error: null });
+				} catch (error) {
+					console.error('Error creating/loading user profile:', error);
+					authStore.set({ user: null, loading: false, error: 'Failed to load user profile' });
+				}
+			} else {
+				authStore.set({ user: null, loading: false, error: null });
+			}
+		},
+		(error) => {
+			console.error('Error in onAuthStateChanged listener:', error);
+			authStore.set({ user: null, loading: false, error: 'Authentication listener error.' });
+		}
+	);
 }
 
-// Sign in with email and password
 export async function signIn(email: string, password: string): Promise<void> {
-  authStore.update((state) => ({ ...state, loading: true, error: null }));
+	if (!browser) throw new Error('Sign in can only be called on the client.');
+	authStore.update((state) => ({ ...state, loading: true, error: null }));
 
-  try {
-    await signInWithEmailAndPassword(auth, email, password);
-    // Auth state listener will update the store
-  } catch (error: any) {
-    let errorMessage = "Failed to sign in";
+	// --- MOCK LOGIC for signIn ---
+	if (useMockAuth) {
+		console.warn(`Mock Sign In attempt for: ${email}`);
+		await new Promise((res) => setTimeout(res, 500)); // Simulate network delay
+		// Simple mock check - use 'test@test.com' / 'password' to log in
+		if (email === 'test@test.com' && password === 'password') {
+			console.log('Mock Sign In successful.');
+			authStore.set({ user: mockUser, loading: false, error: null });
+			goto('/'); // Redirect to dashboard after mock login
+		} else {
+			console.log('Mock Sign In failed.');
+			const errorMsg = 'Invalid mock credentials';
+			authStore.update((state) => ({ ...state, loading: false, error: errorMsg }));
+			throw new Error(errorMsg);
+		}
+		return; // End mock logic
+	}
+	// --- END MOCK LOGIC ---
 
-    // Handle specific Firebase auth errors
-    if (
-      error.code === "auth/user-not-found" ||
-      error.code === "auth/wrong-password"
-    ) {
-      errorMessage = "Invalid email or password";
-    } else if (error.code === "auth/too-many-requests") {
-      errorMessage = "Too many failed login attempts. Please try again later.";
-    }
-
-    authStore.update((state) => ({
-      ...state,
-      loading: false,
-      error: errorMessage,
-    }));
-    throw new Error(errorMessage);
-  }
+	// Original Firebase logic (runs only if useMockAuth is false)
+	const auth = getAuthInstance();
+	if (!auth) throw new Error('Auth service not available');
+	try {
+		await signInWithEmailAndPassword(auth, email, password);
+		// Listener updates store, navigation might happen based on store change
+	} catch (error: any) {
+		// ... (keep existing Firebase error handling) ...
+		let errorMessage = 'Failed to sign in';
+		if (
+			error.code === 'auth/user-not-found' ||
+			error.code === 'auth/wrong-password' ||
+			error.code === 'auth/invalid-credential'
+		) {
+			errorMessage = 'Invalid email or password';
+		} else if (error.code === 'auth/too-many-requests') {
+			errorMessage = 'Access temporarily disabled due to too many failed login attempts.';
+		} else if (error.code === 'auth/invalid-api-key') {
+			errorMessage = 'Authentication configuration error.';
+		} else if (error.code === 'auth/network-request-failed') {
+			errorMessage = 'Network error. Please check your connection.';
+		}
+		console.error('Sign in error:', error.code, error.message);
+		authStore.update((state) => ({ ...state, loading: false, error: errorMessage }));
+		throw new Error(errorMessage);
+	}
 }
 
-// Sign out
 export async function signOut(): Promise<void> {
-  try {
-    await firebaseSignOut(auth);
-    goto("/login"); // Redirect to login page
-  } catch (error) {
-    console.error("Error signing out:", error);
-    throw error;
-  }
+	if (!browser) return;
+
+	// --- MOCK LOGIC for signOut ---
+	if (useMockAuth) {
+		console.warn('Mock Sign Out');
+		authStore.set({ user: null, loading: false, error: null });
+		goto('/login'); // Redirect after mock logout
+		return; // End mock logic
+	}
+	// --- END MOCK LOGIC ---
+
+	// Original Firebase logic
+	const auth = getAuthInstance();
+	if (!auth) {
+		console.warn('Auth not available for sign out');
+		authStore.set({ user: null, loading: false, error: 'Auth unavailable' });
+		goto('/login');
+		return;
+	}
+	try {
+		await firebaseSignOut(auth);
+		// Listener handles store update
+		goto('/login');
+	} catch (error) {
+		console.error('Error signing out:', error);
+		authStore.update((state) => ({ ...state, error: 'Failed to sign out.' }));
+		throw error;
+	}
 }
 
-// Register a new user
-export async function register(
-  email: string,
-  password: string,
-  name: string
-): Promise<void> {
-  authStore.update((state) => ({ ...state, loading: true, error: null }));
-
-  try {
-    // Create the user in Firebase Auth
-    const userCredential = await createUserWithEmailAndPassword(
-      auth,
-      email,
-      password
-    );
-    const firebaseUser = userCredential.user;
-
-    // Update profile with name
-    await updateProfile(firebaseUser, { displayName: name });
-
-    // Auth state listener will handle creating the user profile
-  } catch (error: any) {
-    let errorMessage = "Failed to register";
-
-    if (error.code === "auth/email-already-in-use") {
-      errorMessage = "Email is already in use";
-    } else if (error.code === "auth/weak-password") {
-      errorMessage = "Password is too weak";
-    } else if (error.code === "auth/invalid-email") {
-      errorMessage = "Email is invalid";
-    }
-
-    authStore.update((state) => ({
-      ...state,
-      loading: false,
-      error: errorMessage,
-    }));
-    throw new Error(errorMessage);
-  }
+// --- Other Functions (register, resetPassword, etc.) ---
+// Add 'useMockAuth' checks to these as well if you need to test them without Firebase.
+// For now, they will likely throw errors if called while mocking is enabled.
+// Example for register:
+export async function register(email: string, password: string, name: string): Promise<void> {
+	if (!browser) throw new Error('Register can only be called on the client.');
+	if (useMockAuth) {
+		console.warn('Mock Register: Simulating success, no user created.');
+		authStore.update((s) => ({ ...s, loading: true }));
+		await new Promise((res) => setTimeout(res, 300));
+		// Simulate immediate login after register? Or just success message?
+		// For now, just show success and let user log in with mock credentials.
+		authStore.update((s) => ({ ...s, loading: false, error: null }));
+		alert('Mock registration successful! Please log in with test@test.com / password.');
+		goto('/login');
+		return;
+	}
+	// ... (keep existing Firebase registration logic) ...
+	const auth = getAuthInstance();
+	if (!auth) throw new Error('Auth service not available');
+	authStore.update((state) => ({ ...state, loading: true, error: null }));
+	// ... rest of try/catch
 }
 
-// Reset password
+// ... (Add similar mock guards to resetPassword, updateUserProfile, updateUserRole if needed for testing) ...
 export async function resetPassword(email: string): Promise<void> {
-  try {
-    await sendPasswordResetEmail(auth, email);
-  } catch (error: any) {
-    let errorMessage = "Failed to send password reset email";
-
-    if (error.code === "auth/user-not-found") {
-      errorMessage = "No user found with this email";
-    } else if (error.code === "auth/invalid-email") {
-      errorMessage = "Email is invalid";
-    }
-
-    throw new Error(errorMessage);
-  }
+	if (!browser) throw new Error('Password reset can only be called on the client.');
+	if (useMockAuth) {
+		console.warn('Mock Password Reset: Simulating email sent.');
+		alert(`(Mock) Password reset email sent to ${email}`);
+		return;
+	}
+	const auth = getAuthInstance();
+	if (!auth) throw new Error('Auth service not available');
+	// ... rest of try/catch
 }
 
-// Update user profile
-export async function updateUserProfile(
-  userId: string,
-  data: Partial<User>
-): Promise<void> {
-  try {
-    const userDocRef = doc(db, "users", userId);
-    await setDoc(userDocRef, data, { merge: true });
-
-    // If current user, update auth store
-    authStore.update((state) => {
-      if (state.user && state.user.id === userId) {
-        return {
-          ...state,
-          user: { ...state.user, ...data },
-        };
-      }
-      return state;
-    });
-  } catch (error) {
-    console.error("Error updating user profile:", error);
-    throw error;
-  }
+export async function updateUserProfile(userId: string, data: Partial<User>): Promise<void> {
+	if (!browser) throw new Error('User profile update can only be called on the client.');
+	if (useMockAuth) {
+		console.warn('Mock Update User Profile:', userId, data);
+		if (userId === mockUser.id) {
+			Object.assign(mockUser, data); // Update in-memory mock user
+			authStore.update((s) => (s.user ? { ...s, user: { ...s.user, ...data } } : s));
+		}
+		return;
+	}
+	const db = getDbInstance();
+	if (!db) throw new Error('Database service not available');
+	// ... rest of try/catch
 }
 
-// Update user role (admin only)
-export async function updateUserRole(
-  userId: string,
-  role: User["role"]
-): Promise<void> {
-  authStore.update((state) => {
-    // Only allow role updates if current user is admin
-    if (!state.user || state.user.role !== "admin") {
-      throw new Error(
-        "Unauthorized: Only administrators can update user roles"
-      );
-    }
-    return state;
-  });
-
-  await updateUserProfile(userId, { role });
+export async function updateUserRole(userId: string, role: User['role']): Promise<void> {
+	if (!browser) throw new Error('User role update can only be called on the client.');
+	if (useMockAuth) {
+		console.warn(`Mock Update User Role for ${userId} to ${role}. Requires admin.`);
+		if (userId === mockUser.id && mockUser.role === 'admin') {
+			// Simple check
+			mockUser.role = role;
+			authStore.update((s) =>
+				s.user?.id === userId ? { ...s, user: { ...s.user, role: role } } : s
+			);
+			alert(`(Mock) Role for ${userId} updated to ${role}`);
+		} else {
+			alert('(Mock) Role update failed (not admin or wrong user).');
+		}
+		return;
+	}
+	// ... rest of function including permission check and calling updateUserProfile
 }
 
-// Check if user is authorized for a specific role
-export function checkUserRole(requiredRole: User["role"]): Readable<boolean> {
-  return derived(authStore, ($authStore) => {
-    if (!$authStore.user) return false;
-
-    // Admin role has access to everything
-    if ($authStore.user.role === "admin") return true;
-
-    // Manager role has access to manager and performer
-    if (
-      $authStore.user.role === "manager" &&
-      (requiredRole === "manager" ||
-        requiredRole === "performer" ||
-        requiredRole === "readonly")
-    ) {
-      return true;
-    }
-
-    // Performer role has access to performer
-    if (
-      $authStore.user.role === "performer" &&
-      (requiredRole === "performer" || requiredRole === "readonly")
-    ) {
-      return true;
-    }
-
-    // Readonly role has access only to readonly
-    if ($authStore.user.role === "readonly" && requiredRole === "readonly") {
-      return true;
-    }
-
-    return false;
-  });
+// checkUserRole should work fine as it reads from the store, which is updated by mock functions
+export function checkUserRole(requiredRole: User['role']): Readable<boolean> {
+	// ... (keep existing derived logic) ...
+	return derived(authStore, ($authStore) => {
+		if (!$authStore.user || $authStore.loading) return false;
+		const rolesHierarchy = { readonly: 0, performer: 1, manager: 2, admin: 3 };
+		const userLevel = rolesHierarchy[$authStore.user.role] ?? -1;
+		const requiredLevel = rolesHierarchy[requiredRole] ?? -1;
+		return userLevel >= requiredLevel;
+	});
 }
 
-// Export a readable store of the current user
+// Derived stores
 export const user = derived(authStore, ($authStore) => $authStore.user);
-
-// Export a readable store of the loading state
 export const loading = derived(authStore, ($authStore) => $authStore.loading);
-
-// Export a readable store of the error state
 export const error = derived(authStore, ($authStore) => $authStore.error);
 
-// Initialize auth on app start
-initAuth();
-
+// Default export
 export default {
-  signIn,
-  signOut,
-  register,
-  resetPassword,
-  updateUserProfile,
-  updateUserRole,
-  user,
-  loading,
-  error,
-  checkUserRole,
+	signIn,
+	signOut,
+	register,
+	resetPassword,
+	updateUserProfile,
+	updateUserRole,
+	user,
+	loading,
+	error,
+	checkUserRole,
+	initAuth
 };

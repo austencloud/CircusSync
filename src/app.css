@@ -1,0 +1,9 @@
+/* src/app.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Add any global custom styles here */
+body {
+	@apply antialiased;
+}

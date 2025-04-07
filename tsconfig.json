@@ -9,11 +9,11 @@
 		"skipLibCheck": true,
 		"sourceMap": true,
 		"strict": true,
-		"module": "NodeNext",
-		"moduleResolution": "NodeNext",
+		"moduleResolution": "Bundler",
 		"baseUrl": ".",
 		"paths": {
 			"$lib/*": ["src/lib/*"]
-		}
+		},
+		"types": ["svelte", "@sveltejs/kit"] 
 	}
 }

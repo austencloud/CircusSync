@@ -1,12 +1,12 @@
-// src/lib/components/ui/Icon.svelte
 <script lang="ts">
   // This is a placeholder component that would use Lucide icons
   // In a real app, you would import the icons from lucide-svelte
   export let name: string;
   export let size: number = 24;
   export let strokeWidth: number = 2;
-  export let class: string = '';
-  
+  // Remember to rename 'class' if you haven't already!
+  export let extraClass: string = ''; // Use extraClass or className instead of class
+
   // Mapping of icon names to Lucide SVG paths
   const iconPaths: Record<string, string> = {
     'home': 'M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z M9 22V12h6v10',
@@ -59,18 +59,12 @@
   stroke-width={strokeWidth}
   stroke-linecap="round"
   stroke-linejoin="round"
-  class={class}
+  class={extraClass} 
 >
   {#if iconPaths[name]}
     <path d={iconPaths[name]} />
   {:else}
-    <!-- Default icon if not found -->
     <circle cx="12" cy="12" r="10" />
     <line x1="8" y1="12" x2="16" y2="12" />
   {/if}
 </svg>
-
-<!-- Add a default export to fix the TypeScript error -->
-<script context="module">
-  export default {};
-</script>

@@ -8,7 +8,7 @@
     export let href: string | null = null;
     export let type: 'button' | 'submit' | 'reset' = 'button';
     export let fullWidth = false;
-    export let class: string = '';
+    export let className: string = '';
     
     // Compute classes based on props
     $: variantClasses = {
@@ -52,7 +52,7 @@
       disabledClasses,
       loadingClasses,
       widthClasses,
-      class,
+      className,
     ].join(' ');
   </script>
   
