@@ -1,8 +1,8 @@
 <!-- src/lib/components/clients/ClientForm.svelte -->
 <script lang="ts">
     import { createEventDispatcher } from 'svelte';
-    import type { Client } from '$lib/types';
     import Button from '$lib/components/ui/Button.svelte';
+    import type { Client } from '$lib/types';
     import Icon from '$lib/components/ui/Icon.svelte';
     
     export let client: Partial<Client> = {};
@@ -82,7 +82,7 @@
     
     // Remove event type
     function removeEventType(eventType: string) {
-      formData.eventTypes = formData.eventTypes.filter(t => t !== eventType);
+      formData.eventTypes = formData.eventTypes.filter((t: string) => t !== eventType);
     }
     
     // Add new service
@@ -95,7 +95,7 @@
     
     // Remove service
     function removeService(service: string) {
-      formData.servicesUsed = formData.servicesUsed.filter(s => s !== service);
+      formData.servicesUsed = formData.servicesUsed.filter((s: string) => s !== service);
     }
     
     // Toggle event type from predefined options

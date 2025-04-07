@@ -1,58 +1,197 @@
-# Svelte library
+# CircusSync - Performance Production Company Management App
 
-Everything you need to build a Svelte library, powered by [`sv`](https://npmjs.com/package/sv).
+CircusSync is a comprehensive management application designed specifically for entertainment production companies. It helps manage clients, performers, gigs, contracts, and more - all in one intuitive interface.
 
-Read more about creating a library [in the docs](https://svelte.dev/docs/kit/packaging).
+## Features
 
-## Creating a project
+- **Client Management**: Track client contacts, event history, preferences, and follow-up reminders
+- **Performer Database**: Manage performer details, skills, availability, and payment rates
+- **Event Planning**: Organize gigs with detailed information about venues, schedules, and required resources
+- **Contract & Payment Tracking**: Generate contracts and keep track of deposits and payments
+- **Calendar Views**: Visualize your schedule with intuitive calendar interfaces
+- **Task Management**: Never miss a follow-up with built-in task management
+- **Agent Relationships**: Track agent partnerships and commission structures
 
-If you're seeing this, you've probably already done this step. Congrats!
+## Getting Started
 
+### Prerequisites
+
+- Node.js (v16+)
+- npm or yarn
+
+### Installation
+
+1. Clone the repository
 ```bash
-# create a new project in the current directory
-npx sv create
-
-# create a new project in my-app
-npx sv create my-app
+git clone https://github.com/yourusername/circussync.git
+cd circussync
 ```
 
-## Developing
+2. Install dependencies
+```bash
+npm install
+# or
+yarn install
+```
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+3. Set up environment variables
+Create a `.env` file in the root directory with the following variables:
+```
+VITE_FIREBASE_API_KEY=your_firebase_api_key
+VITE_FIREBASE_AUTH_DOMAIN=your_firebase_auth_domain
+VITE_FIREBASE_PROJECT_ID=your_firebase_project_id
+VITE_FIREBASE_STORAGE_BUCKET=your_firebase_storage_bucket
+VITE_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
+VITE_FIREBASE_APP_ID=your_firebase_app_id
+```
 
+4. Run the development server
 ```bash
 npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+# or
+yarn dev
 ```
 
-Everything inside `src/lib` is part of your library, everything inside `src/routes` can be used as a showcase or preview app.
+5. Open your browser and navigate to `http://localhost:5173`
 
-## Building
+## Project Structure
 
-To build your library:
-
-```bash
-npm run package
+```
+circussync/
+├── src/
+│   ├── app.html
+│   ├── app.d.ts
+│   ├── routes/                # SvelteKit routes
+│   │   ├── +layout.svelte     # Main app layout
+│   │   ├── +page.svelte       # Dashboard
+│   │   ├── login/+page.svelte # Login page
+│   │   ├── clients/           # Client management pages
+│   │   ├── performers/        # Performer management pages
+│   │   ├── events/            # Event management pages
+│   │   └── agents/            # Agent management pages
+│   ├── lib/
+│   │   ├── components/        # Reusable components
+│   │   │   ├── ui/            # UI components (buttons, modals, etc.)
+│   │   │   ├── clients/       # Client-related components
+│   │   │   ├── performers/    # Performer-related components
+│   │   │   ├── events/        # Event-related components
+│   │   │   └── dashboard/     # Dashboard components
+│   │   ├── stores/            # Svelte stores
+│   │   │   ├── clientStore.ts
+│   │   │   ├── performerStore.ts
+│   │   │   ├── eventStore.ts
+│   │   │   └── agentStore.ts
+│   │   ├── services/          # Services for external APIs
+│   │   │   ├── database.ts    # Firebase database service
+│   │   │   ├── auth.ts        # Authentication service
+│   │   │   ├── storage.ts     # File storage service
+│   │   │   └── notifications.ts # Notification service
+│   │   ├── types.ts           # TypeScript type definitions
+│   │   └── utils/             # Utility functions
+│   └── static/                # Static assets
+├── package.json
+└── tsconfig.json
 ```
 
-To create a production version of your showcase app:
+## Database Setup
 
+CircusSync uses Firebase for the backend. To set up your database:
+
+1. Create a new Firebase project at [firebase.google.com](https://firebase.google.com)
+2. Enable Firestore Database, Authentication, and Storage
+3. Configure Authentication to allow email/password sign-in
+4. Create the following Firestore collections:
+   - `clients`
+   - `performers`
+   - `events`
+   - `agents`
+   - `tasks`
+   - `users`
+   - `notifications`
+   - `documents`
+
+## Customization
+
+### Tailwind CSS
+
+The app uses Tailwind CSS for styling. You can customize the theme in `tailwind.config.js`:
+
+```js
+// tailwind.config.js
+module.exports = {
+  content: ['./src/**/*.{html,js,svelte,ts}'],
+  theme: {
+    extend: {
+      colors: {
+        // Customize your color palette here
+        primary: {
+          50: '#eef2ff',
+          100: '#e0e7ff',
+          // ...and so on
+        },
+      },
+    },
+  },
+  plugins: [
+    require('@tailwindcss/forms'),
+  ],
+}
+```
+
+### Firebase Rules
+
+Secure your Firebase database with these recommended rules:
+
+```
+// Firestore rules
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if request.auth != null;
+    }
+    
+    match /users/{userId} {
+      allow read, write: if request.auth.uid == userId || 
+                           get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    // Add more granular rules as needed
+  }
+}
+```
+
+## Deployment
+
+To build and deploy CircusSync:
+
+1. Build the production version
 ```bash
 npm run build
+# or
+yarn build
 ```
 
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
-
-## Publishing
-
-Go into the `package.json` and give your package the desired name through the `"name"` option. Also consider adding a `"license"` field and point it to a `LICENSE` file which you can create from a template (one popular option is the [MIT license](https://opensource.org/license/mit/)).
-
-To publish your library to [npm](https://www.npmjs.com):
-
+2. Preview the production build locally
 ```bash
-npm publish
+npm run preview
+# or
+yarn preview
 ```
+
+3. Deploy to your preferred hosting platform (such as Firebase Hosting, Vercel, or Netlify)
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgments
+
+- Svelte and SvelteKit for the frontend framework
+- Firebase for backend services
+- Tailwind CSS for styling
+- Lucide icons for beautiful SVG icons

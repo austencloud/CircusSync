@@ -47,7 +47,7 @@
     ];
     
     // Skill category display names
-    const skillCategoryNames = {
+    const skillCategoryNames: Record<PerformerSkillCategory, string> = {
       fire: 'Fire Performance',
       balloon: 'Balloon Art',
       stilt: 'Stilt Walking',
@@ -113,7 +113,7 @@
     
     // Remove skill
     function removeSkill(index: number) {
-      formData.skills = formData.skills.filter((_, i) => i !== index);
+      formData.skills = formData.skills.filter((_: any, i: number) => i !== index);
     }
     
     // Add new pay rate
@@ -136,7 +136,7 @@
     
     // Remove pay rate
     function removePayRate(index: number) {
-      formData.payRate = formData.payRate.filter((_, i) => i !== index);
+      formData.payRate = formData.payRate.filter((_: any, i: number) => i !== index);
     }
     
     // Get color for skill category

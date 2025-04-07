@@ -5,7 +5,7 @@ export interface User {
   id: string;
   email: string;
   name: string;
-  role: "admin" | "manager" | "performer" | "readonly";
+  role: 'admin' | 'manager' | 'performer' | 'readonly';
   photoURL?: string;
   lastLogin: Date;
 }
@@ -26,29 +26,17 @@ export interface Client {
     task: string;
   };
   notes: string;
-  status: "active" | "inactive" | "lead" | "yearly";
+  status: 'active' | 'inactive' | 'lead' | 'yearly';
   events: string[]; // references to events
   createdAt: Date;
   updatedAt: Date;
 }
 
-export type PerformerSkillCategory =
-  | "fire"
-  | "balloon"
-  | "stilt"
-  | "juggle"
-  | "aerial"
-  | "magic"
-  | "other";
-export type SkillLevel = "beginner" | "intermediate" | "expert";
-export type AvailabilityStatus = "available" | "unavailable" | "tentative";
-export type EventStatus =
-  | "inquiry"
-  | "confirmed"
-  | "deposit-received"
-  | "completed"
-  | "cancelled";
-export type ContactMethod = "email" | "phone" | "text";
+export type PerformerSkillCategory = 'fire' | 'balloon' | 'stilt' | 'juggle' | 'aerial' | 'magic' | 'other';
+export type SkillLevel = 'beginner' | 'intermediate' | 'expert';
+export type AvailabilityStatus = 'available' | 'unavailable' | 'tentative';
+export type EventStatus = 'inquiry' | 'confirmed' | 'deposit-received' | 'completed' | 'cancelled';
+export type ContactMethod = 'email' | 'phone' | 'text';
 
 export interface Performer {
   id: string;
@@ -73,10 +61,10 @@ export interface Performer {
   payRate: {
     category: string;
     rate: number;
-    unit: "hourly" | "per-event" | "per-day";
+    unit: 'hourly' | 'per-event' | 'per-day';
   }[];
   documents?: {
-    type: "contract" | "insurance" | "certification" | "other";
+    type: 'contract' | 'insurance' | 'certification' | 'other';
     name: string;
     url: string;
     expiryDate?: Date;
@@ -127,7 +115,7 @@ export interface Event {
     totalValue: number;
     paid: boolean;
     paidDate?: Date;
-    method?: "check" | "cash" | "transfer" | "credit-card";
+    method?: 'check' | 'cash' | 'transfer' | 'credit-card';
   };
   notes: string;
   clientLiaison: string;
@@ -135,7 +123,7 @@ export interface Event {
   createdAt: Date;
   updatedAt: Date;
   recurring?: {
-    type: "weekly" | "monthly" | "yearly";
+    type: 'weekly' | 'monthly' | 'yearly';
     endDate: Date;
   };
 }
@@ -151,7 +139,7 @@ export interface Agent {
   opportunitiesSent: {
     date: Date;
     description: string;
-    status: "pending" | "accepted" | "rejected";
+    status: 'pending' | 'accepted' | 'rejected';
     value?: number;
   }[];
   partnershipStartDate: Date | null;
@@ -164,7 +152,7 @@ export interface Agent {
 
 export interface Notification {
   id: string;
-  type: "reminder" | "alert" | "info";
+  type: 'reminder' | 'alert' | 'info';
   title: string;
   message: string;
   linkTo?: string;
@@ -189,9 +177,9 @@ export interface CalendarEvent {
 export interface Document {
   id: string;
   name: string;
-  type: "contract" | "invoice" | "rider" | "insurance" | "other";
+  type: 'contract' | 'invoice' | 'rider' | 'insurance' | 'other';
   relatedTo: {
-    type: "client" | "performer" | "event" | "agent";
+    type: 'client' | 'performer' | 'event' | 'agent';
     id: string;
   };
   url: string;
@@ -206,10 +194,10 @@ export interface Task {
   description?: string;
   dueDate: Date;
   completed: boolean;
-  priority: "low" | "medium" | "high";
+  priority: 'low' | 'medium' | 'high';
   assignedTo: string; // user ID
   relatedTo?: {
-    type: "client" | "performer" | "event" | "agent";
+    type: 'client' | 'performer' | 'event' | 'agent';
     id: string;
   };
   createdAt: Date;
