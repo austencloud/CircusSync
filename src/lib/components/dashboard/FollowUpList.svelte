@@ -61,6 +61,6 @@
   <div class="mt-3 text-right">
     <a href="/clients?filter=follow-up" class="text-blue-600 hover:underline text-sm font-medium flex items-center justify-end">
       View all follow-ups
-      <Icon name="arrow-right" size={16} class="ml-1" />
+      <Icon name="arrow-right" size={16} extraClass="ml-1" />
     </a>
   </div>

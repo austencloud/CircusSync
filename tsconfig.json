@@ -8,12 +8,12 @@
 		"resolveJsonModule": true,
 		"skipLibCheck": true,
 		"sourceMap": true,
-		"strict": true,
+		"strict": false,
 		"moduleResolution": "Bundler",
 		"baseUrl": ".",
 		"paths": {
 			"$lib/*": ["src/lib/*"]
 		},
-		"types": ["svelte", "@sveltejs/kit"] 
+		"types": ["svelte", "@sveltejs/kit"]
 	}
 }

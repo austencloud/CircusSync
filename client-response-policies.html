@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Cirque Aflame Client Response Guidelines - Revised</title>
+		<style>
+			body {
+				font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+				line-height: 1.6; /* Increased for readability */
+				color: #333;
+				max-width: 1100px;
+				margin: 0 auto;
+				padding: 15px 25px; /* Slightly increased padding */
+				background-color: #f9f9f9;
+				font-size: 16px; /* Increased base font size */
+			}
+			header {
+				background: linear-gradient(135deg, #ff6a00, #ee0979);
+				color: white;
+				padding: 20px; /* Increased padding */
+				text-align: center;
+				border-radius: 8px;
+				margin-bottom: 25px; /* Increased margin */
+				box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+			}
+			h1 {
+				margin: 0 0 5px 0;
+				font-size: 2.2em; /* Slightly larger */
+			}
+			header p {
+				margin: 0;
+				font-size: 1.1em;
+				opacity: 0.9;
+			}
+			h2 {
+				color: #ee0979;
+				border-bottom: 2px solid #ff6a00; /* Thicker border */
+				padding-bottom: 8px;
+				margin: 25px 0 15px 0; /* Increased top margin */
+				font-size: 1.8em; /* Larger */
+			}
+			h3 {
+				color: #ff6a00;
+				margin: 18px 0 10px 0; /* Adjusted margins */
+				font-size: 1.4em; /* Larger */
+			}
+			h4 {
+				margin: 12px 0 8px 0; /* Adjusted margins */
+				font-size: 1.15em; /* Larger */
+				font-weight: 600; /* Slightly bolder */
+			}
+			.grid-container {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+				gap: 20px; /* Increased gap */
+			}
+			.card {
+				background-color: white;
+				border-radius: 8px;
+				padding: 20px; /* Increased padding */
+				margin-bottom: 20px; /* Increased margin */
+				box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12); /* Slightly softer shadow */
+			}
+			.price {
+				font-weight: bold;
+				color: #ee0979;
+				font-size: 1.1em; /* Slightly larger */
+			}
+			.note {
+				background-color: #fff3e0;
+				padding: 10px 12px; /* Increased padding */
+				border-left: 4px solid #ff6a00;
+				margin: 10px 0;
+				font-size: 0.95em; /* Slightly larger */
+				border-radius: 0 4px 4px 0;
+			}
+			.template {
+				background-color: #f0f7ff;
+				padding: 15px; /* Increased padding */
+				border-radius: 6px;
+				border-left: 4px solid #0077cc;
+				white-space: pre-line;
+				font-family: 'Courier New', Courier, monospace; /* Changed font */
+				font-size: 0.9em; /* Adjusted size */
+				margin: 15px 0;
+				max-height: 300px; /* Increased max-height */
+				overflow-y: auto;
+				line-height: 1.5; /* Adjusted for code readability */
+			}
+			.cta {
+				/* Call To Action */
+				font-weight: bold;
+				color: #ee0979;
+				display: block; /* Make it stand out */
+				margin-top: 15px;
+			}
+			table {
+				width: 100%;
+				border-collapse: collapse;
+				margin: 15px 0;
+				font-size: 0.95em; /* Slightly larger */
+			}
+			th,
+			td {
+				border: 1px solid #ddd;
+				padding: 10px 12px; /* Increased padding */
+				text-align: left;
+				vertical-align: top; /* Better alignment */
+			}
+			th {
+				background-color: #f2f2f2;
+				font-weight: 600; /* Bolder headings */
+			}
+			.contact-info {
+				text-align: center;
+				margin-top: 30px;
+				padding: 18px; /* Increased padding */
+				background-color: #333;
+				color: white;
+				border-radius: 8px;
+				font-size: 1.1em; /* Larger */
+			}
+			.contact-info p {
+				margin: 5px 0;
+			}
+			.special-phrase {
+				background-color: #e8f4f8;
+				padding: 12px 15px; /* Increased padding */
+				border-radius: 6px;
+				border-left: 4px solid #1e88e5; /* Adjusted color */
+				margin: 10px 0 15px 0; /* Adjusted margins */
+				font-size: 0.95em; /* Slightly larger */
+			}
+			.video-links {
+				margin: 20px 0;
+				text-align: center;
+			}
+			.video-links a {
+				display: inline-block;
+				color: #0077cc;
+				margin: 5px 15px; /* Adjusted margin */
+				text-decoration: none;
+				font-weight: 500;
+				padding: 8px 12px;
+				border: 1px solid #ddd;
+				border-radius: 4px;
+				background-color: #f8f8f8;
+				transition: background-color 0.2s ease, border-color 0.2s ease;
+			}
+			.video-links a:hover {
+				text-decoration: none;
+				background-color: #e9ecef;
+				border-color: #ccc;
+			}
+			ul,
+			ol {
+				margin: 10px 0;
+				padding-left: 25px; /* Adjusted padding */
+			}
+			li {
+				margin-bottom: 8px; /* Spacing between list items */
+			}
+			p {
+				margin: 8px 0; /* Consistent paragraph margin */
+			}
+
+			/* Accordion Styles for Service Details */
+			details {
+				background-color: white;
+				border-radius: 8px;
+				margin-bottom: 20px;
+				box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+				border: 1px solid #eee; /* Subtle border */
+			}
+			details summary {
+				padding: 15px 20px;
+				font-size: 1.5em; /* Larger summary text */
+				font-weight: 600;
+				color: #ee0979;
+				cursor: pointer;
+				list-style: none; /* Remove default marker */
+				position: relative;
+				border-radius: 8px 8px 0 0; /* Match top corners */
+			}
+			details summary::before {
+				/* Custom marker */
+				content: '▸';
+				position: absolute;
+				left: -5px; /* Adjust as needed */
+				top: 50%;
+				transform: translateY(-50%) rotate(0deg);
+				transition: transform 0.2s ease-out;
+				font-size: 1em;
+				color: #ff6a00;
+			}
+			details[open] summary::before {
+				transform: translateY(-50%) rotate(90deg);
+			}
+			details[open] summary {
+				border-bottom: 1px solid #eee; /* Separator when open */
+				border-radius: 8px 8px 0 0;
+			}
+			details .details-content {
+				padding: 0 20px 20px 20px; /* Padding only for content */
+			}
+
+			/* Specific section styling */
+			#core-rules .grid-container {
+				align-items: start; /* Align items top in the grid */
+			}
+		</style>
+	</head>
+	<body>
+		<header>
+			<h1>Cirque Aflame</h1>
+			<p>Client Response Ruleset</p>
+		</header>
+
+		<section id="core-rules">
+			<h2>Core Guidelines & Fees</h2>
+			<div class="grid-container">
+				<div class="card">
+					<h3>Communication Standards</h3>
+					<ul>
+						<li>Always use "we" instead of "I"</li>
+						<li>Keep responses concise and professional</li>
+						<li>Present pricing with $ amounts first</li>
+						<li>Include travel fees in every quote</li>
+						<li>State all limitations explicitly</li>
+						<li>End with clear call to action</li>
+						<li>Sign off with: "Best, Austen Cloud, Cirque Aflame, 224-442-3123"</li>
+					</ul>
+				</div>
+
+				<div class="card">
+					<h3>Travel Fees</h3>
+					<table>
+						<tr>
+							<th>Distance</th>
+							<th>Fee</th>
+							<th>Examples</th>
+						</tr>
+						<tr>
+							<td>Local Chicago</td>
+							<td>No fee</td>
+							<td>-</td>
+						</tr>
+						<tr>
+							<td>Under 30 miles</td>
+							<td>$50-75</td>
+							<td>Berwyn, La Grange</td>
+						</tr>
+						<tr>
+							<td>30-60 miles</td>
+							<td>$75-125</td>
+							<td>Johnsburg, Bristol</td>
+						</tr>
+						<tr>
+							<td>60-100 miles</td>
+							<td>$150-200</td>
+							<td>Milwaukee, Eagle</td>
+						</tr>
+					</table>
+					<p><b>Special Cases:</b> +$50-100 for holidays, +$50 for late night (after 10 PM)</p>
+				</div>
+			</div>
+		</section>
+
+		<section id="service-details">
+			<h2>Service Details & Templates</h2>
+
+			<details>
+				<summary>Fire Performances</summary>
+				<div class="details-content">
+					<div class="grid-container">
+						<div class="card">
+							<h4>Pricing</h4>
+							<p><span class="price">$550</span> – Solo (15 min, 4 sets)</p>
+							<div class="note">Requires breaks between sets for safety.</div>
+							<p><span class="price">$1,200</span> – Duo (25 min, 6 sets, 1 duo act)</p>
+							<p>
+								<span class="price">$1,600</span> – Three Performers (35 min, 9 sets, 3 duo acts)
+							</p>
+							<p>
+								<span class="price">$2,000–$2,200</span> – Four Performers (45 min, 12 sets, group
+								finale)
+							</p>
+						</div>
+						<div class="card">
+							<h4>Required Info</h4>
+							<ul>
+								<li>Indoor or outdoor venue?</li>
+								<li>Dedicated performance space available? Dimensions?</li>
+								<li>Surface non-flammable?</li>
+								<li>Venue requires permits for fire?</li>
+								<li>Client provides music or should we bring it?</li>
+							</ul>
+						</div>
+					</div>
+					<div class="card">
+						<h4>Response Template</h4>
+						<div class="template">
+							Subject: Fire Performance for [Event Type] Hi [Name], Thanks for reaching out! We'd
+							love to bring an exciting fire performance to your [event type]. Here are our fire
+							performance options: $550 – Solo Fire Performance (15 minutes, 4 sets) Note: A solo
+							performance requires brief breaks between sets for safe fuel management and prop
+							transitions. $1,200 – Duo Fire Performance (25 minutes, 6 sets, includes 1 duo act)
+							$1,600 – Three Performer Show (35 minutes, 9 sets, includes 3 duo acts) $2,000-$2,200
+							– Four Performer Show (45 minutes, 12 sets, includes group finale) There is also a
+							[amount] travel fee for [location]. To tailor the experience, could you please
+							confirm: - Will the performance be indoors or outdoors? - Is there a dedicated
+							performance area? What are its dimensions? - Is the performance surface non-flammable
+							(e.g., concrete, asphalt, dirt)? - Does the venue require specific fire permits (we
+							can advise on this)? Here's a sample of our fire performances: Fire Show Promo:
+							https://youtu.be/nRw0PPW2NiM Another Sample Performance: https://youtu.be/COskuYeFdTA
+							Let us know which option works best for you, and provide the requested details so we
+							can finalize everything! Best, Austen Cloud Cirque Aflame 224-442-3123
+						</div>
+					</div>
+				</div>
+			</details>
+
+			<details>
+				<summary>LED Performances</summary>
+				<div class="details-content">
+					<div class="grid-container">
+						<div class="card">
+							<h4>Pricing</h4>
+							<h5>Staged Shows:</h5>
+							<p><span class="price">$1,100</span> – Three Performers (25 min)</p>
+							<div class="note">Minimum three performers required for staged shows.</div>
+							<h5>Ambient Performances:</h5>
+							<p><span class="price">$300</span> – First hour per performer</p>
+							<p><span class="price">$150</span> – Each additional hour per performer</p>
+						</div>
+						<div class="card">
+							<h4>Required Info</h4>
+							<ul>
+								<li>Indoor or outdoor venue?</li>
+								<li>Dedicated performance space available? Dimensions?</li>
+								<li>Ambient performance or staged show desired?</li>
+								<li>Lighting conditions at venue (darker is better for LEDs)?</li>
+							</ul>
+						</div>
+					</div>
+					<div class="card">
+						<h4>Response Template</h4>
+						<div class="template">
+							Subject: LED Performance for [Event Type] Hi [Name], Thanks for reaching out! We'd
+							love to bring a vibrant LED performance to your [event type]. We offer two main
+							styles: Ambient LED Performances: Our performers roam throughout your event space,
+							interacting with guests and creating a dynamic, high-tech atmosphere. Pricing: $300
+							for the first hour per performer, then $150 for each additional hour per performer.
+							Choreographed LED Stage Show: A mesmerizing 25-minute synchronized show featuring
+							dynamic routines and dazzling visual effects. Pricing: $1,100 for three performers
+							(minimum required for this show). There is also a [amount] travel fee for [location].
+							To help us plan the perfect performance, could you tell us: - Will the performance be
+							indoors or outdoors? - Is there a dedicated performance area? What are its dimensions?
+							- What are the general lighting conditions at the venue? (LEDs look best in low
+							light). Let us know which style you prefer and provide the venue details so we can
+							finalize the arrangements! Best, Austen Cloud Cirque Aflame 224-442-3123
+						</div>
+					</div>
+				</div>
+			</details>
+
+			<details>
+				<summary>Balloon Twisting</summary>
+				<div class="details-content">
+					<div class="grid-container">
+						<div class="card">
+							<h4>Pricing</h4>
+							<p><span class="price">$300</span> – First hour</p>
+							<p><span class="price">$100</span> – Each additional hour per performer</p>
+							<div class="note">Minimum booking: one hour.</div>
+						</div>
+						<div class="card">
+							<h4>Required Info</h4>
+							<ul>
+								<li>Indoor or outdoor event?</li>
+								<li>Dedicated space available? Dimensions?</li>
+								<li>Approximate number of children/guests expecting balloons?</li>
+								<li>Stationary or walking setup preferred?</li>
+								<li>Any theme or specific designs requested?</li>
+							</ul>
+						</div>
+					</div>
+					<div class="card">
+						<h4>Response Template</h4>
+						<div class="template">
+							Subject: Balloon Twisting for [Event Type] Hi [Name], Thanks for reaching out! We'd be
+							delighted to provide fun and creative balloon twisting for your [event type]. Our
+							pricing for balloon twisting is straightforward: $300 – First hour per performer $100
+							– Each additional hour per performer For your [duration] event, the total for one
+							balloon twister would be [calculation: $300 + ($100 * (duration_hours - 1))]. There is
+							also a [amount] travel fee for [location]. To ensure we're perfectly set up for your
+							event, could you let us know: - Will we have a designated space (stationary), or
+							should we plan to walk around the event? - Approximately how many children (or guests)
+							do you expect might want balloons? - Is there a specific theme for the event? Knowing
+							this helps us prepare the right designs and manage time effectively. Let us know if
+							this works for you, and provide the details above so we can book it in! Best, Austen
+							Cloud Cirque Aflame 224-442-3123
+						</div>
+					</div>
+				</div>
+			</details>
+		</section>
+
+		<section id="special-situations">
+			<h2>Special Phrases & Situations</h2>
+			<div class="grid-container">
+				<div class="card">
+					<h3>Cultural Themes</h3>
+					<div class="special-phrase">
+						"While we specialize in high-energy circus-style performances, we want to clarify that
+						we do not have performers specifically trained in [specific cultural dance/performance
+						style]. However, we are experienced in adapting our costumes, energy, and music
+						selection to complement your theme and deliver a visually stunning and appropriate
+						show."
+					</div>
+
+					<h3>Fire Permits</h3>
+					<div class="special-phrase">
+						"Regarding fire permits: requirements vary by location and venue type. Often, the venue
+						coordinator or local fire department can clarify if a permit is needed. If permitting is
+						required, we can connect you with industry professionals who specialize in navigating
+						this process, though they do charge an additional fee for their services. We are fully
+						insured and prioritize safety above all else."
+					</div>
+				</div>
+
+				<div class="card">
+					<h3>Holiday Premium</h3>
+					<div class="special-phrase">
+						"Please note that since your event falls on [holiday], the quoted price includes a
+						holiday premium to compensate our performers for working on this special day."
+					</div>
+
+					<h3>Space Limitations</h3>
+					<div class="special-phrase">
+						"Thank you for providing the dimensions. A [X]x[X] performance space is a bit tight for
+						some of our largest fire props like large fire wings. However, we can absolutely tailor
+						the performance, focusing on props like poi, staff, fans, and fire eating, to fit safely
+						within that area while still delivering an impressive and high-impact show."
+					</div>
+
+					<h3>Parade Clarification (Balloons)</h3>
+					<div class="special-phrase">
+						"For parades, walking and twisting complex balloons simultaneously can be challenging
+						and slow. Would you prefer the balloon twister to walk in the parade making simpler,
+						quicker designs, or would it be better for us to be stationed in a designated spot along
+						the parade route to create more elaborate balloons for attendees as they pass by?"
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<section id="links-contact">
+			<h2>Promo Links & Contact</h2>
+			<div class="card">
+				<div class="video-links">
+					<a href="https://youtu.be/nRw0PPW2NiM" target="_blank">Fire Show Promo Video</a>
+					<a href="https://youtu.be/COskuYeFdTA" target="_blank">Sample Performance Video</a>
+				</div>
+				<div class="contact-info">
+					<p><strong>Ready to book or have more questions?</strong></p>
+					<p>Austen Cloud | Cirque Aflame</p>
+					<p>Phone: 224-442-3123</p>
+				</div>
+			</div>
+		</section>
+	</body>
+</html>

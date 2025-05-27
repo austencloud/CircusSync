@@ -1,12 +1,10 @@
 // src/lib/firebase.ts
 import { initializeApp, getApps, getApp, type FirebaseApp } from 'firebase/app';
 import { getFirestore, type Firestore } from 'firebase/firestore';
-import { getAuth, type Auth } from 'firebase/auth';
 import { browser } from '$app/environment'; // Import browser check
 
 let app: FirebaseApp | null = null;
 let dbInstance: Firestore | null = null;
-let authInstance: Auth | null = null;
 
 // Initialize only in the browser
 if (browser) {
@@ -62,26 +60,9 @@ function getDbInstance(): Firestore | null {
 	return dbInstance;
 }
 
-/**
- * Gets the Auth instance. Initializes it if necessary (only in browser).
- * Returns null if not in browser or if Firebase app initialization failed.
- */
-function getAuthInstance(): Auth | null {
-	if (browser && app && !authInstance) {
-		try {
-			authInstance = getAuth(app);
-		} catch (e) {
-			console.error('Error getting Auth instance:', e);
-			authInstance = null; // Ensure it's null if error occurs
-		}
-	}
-	return authInstance;
-}
-
 // Export the functions for getting instances
-export { app, getDbInstance, getAuthInstance };
+export { app, getDbInstance };
 
 // Export potentially null instances for convenience, use with caution
 // Prefer using the getter functions within your service methods
 export const db = getDbInstance();
-export const auth = getAuthInstance();

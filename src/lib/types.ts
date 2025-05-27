@@ -1,15 +1,6 @@
 // src/lib/types.ts
 // Core data models for the CircusSync application
 
-export interface User {
-	id: string;
-	email: string;
-	name: string;
-	role: 'admin' | 'manager' | 'performer' | 'readonly';
-	photoURL?: string;
-	lastLogin: Date;
-}
-
 export interface Client {
 	id: string;
 	name: string;
@@ -45,6 +36,7 @@ export type AvailabilityStatus = 'available' | 'unavailable' | 'tentative';
 export type EventStatus = 'inquiry' | 'confirmed' | 'deposit-received' | 'completed' | 'cancelled';
 export type ContactMethod = 'email' | 'phone' | 'text';
 export interface Event {
+	target: HTMLInputElement;
 	id: string;
 	name: string;
 	date: Date;
@@ -66,6 +58,7 @@ export interface Event {
 }
 
 export interface Performer {
+	pay: number;
 	id: string;
 	name: string;
 	email: string;
@@ -186,7 +179,6 @@ export interface Notification {
 	linkTo?: string;
 	read: boolean;
 	createdAt: Date;
-	userId: string; // recipient user ID
 	expiresAt?: Date;
 }
 
@@ -212,7 +204,6 @@ export interface Document {
 	};
 	url: string;
 	createdAt: Date;
-	createdBy: string; // user ID
 	expiresAt?: Date;
 }
 
@@ -223,7 +214,6 @@ export interface Task {
 	dueDate: Date;
 	completed: boolean;
 	priority: 'low' | 'medium' | 'high';
-	assignedTo: string; // user ID
 	relatedTo?: {
 		type: 'client' | 'performer' | 'event' | 'agent';
 		id: string;

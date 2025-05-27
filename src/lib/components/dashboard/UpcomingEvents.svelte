@@ -66,11 +66,11 @@
                 <p class="text-sm text-gray-600">{format(event.date, 'MMM d, yyyy')}</p>
                 <p class="text-sm text-gray-500 mt-1">
                   <span class="inline-flex items-center">
-                    <Icon name="users" size={14} class="mr-1" />
+                    <Icon name="users" size={14} extraClass="mr-1" />
                     {event.performers.length} performers
                   </span>
                   <span class="inline-flex items-center ml-3">
-                    <Icon name="map-pin" size={14} class="mr-1" />
+                    <Icon name="map-pin" size={14} extraClass="mr-1" />
                     {event.location.address.split(',')[0]}
                   </span>
                 </p>
@@ -91,7 +91,7 @@
   <div class="mt-3 text-right">
     <a href="/events" class="text-blue-600 hover:underline text-sm font-medium flex items-center justify-end">
       View all events
-      <Icon name="arrow-right" size={16} class="ml-1" />
+      <Icon name="arrow-right" size={16} extraClass="ml-1" />
     </a>
   </div>
   
